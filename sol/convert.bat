@@ -1,0 +1,1 @@
+web3j solidity generate -a=HelloWorld.abi -b=HelloWorld.bin -o=src -p=com.sample.studyweb3j
