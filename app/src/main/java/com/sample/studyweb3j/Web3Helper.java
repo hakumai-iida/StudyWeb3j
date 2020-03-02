@@ -100,10 +100,18 @@ public class Web3Helper {
         clearAccount();
     }
 
+    //----------------------------------------
+    // 接続先のクリア
+    //----------------------------------------
+    public void clearTarget(){
+        web3 = null;
+        curTarget = 0;
+    }
+
     //----------------------------------------------------------------------------
-    // 有効性の判定
+    // 接続先の有効性を判定
     //----------------------------------------------------------------------------
-    public boolean isValid() {
+    public boolean isTargetValid() {
         if( curTarget <= 0 ){
             return( false );
         }
@@ -112,30 +120,14 @@ public class Web3Helper {
             return( false );
         }
 
-        if( curAccountFileName == null || curAccountFileName.equals( "" ) ){
-            return( false );
-        }
-
-        if( curCredentials == null ){
-            return( false );
-        }
-
         return( true );
     }
 
     //----------------------------------------
-    // ターゲットのクリア
-    //----------------------------------------
-    public void clearTarget(){
-        web3 = null;
-        curTarget = 0;
-    }
-
-    //----------------------------------------
-    // ターゲット設定
+    // 接続先を設定
     //----------------------------------------
     public boolean setTarget( int target ){
-        // 古いターゲットは切断
+        // 古い接続先は切断
         clearTarget();
 
         // 接続先の確認（※無効なら無視）
@@ -167,16 +159,26 @@ public class Web3Helper {
     }
 
     //----------------------------------------
-    // web3の取得
+    // web3取得
     //----------------------------------------
     public Web3j getWeb3(){
+        if( ! isTargetValid() ){
+            log( "@ getWeb3: invalid call" );
+            return( null );
+        }
+
         return( web3 );
     }
 
     //----------------------------------------
-    // 現ターゲットの取得
+    // 接続先取得
     //----------------------------------------
     public int getCurTarget(){
+        if( ! isTargetValid()  ){
+            log( "@ getCurTarget: invalid call" );
+            return( 0 );
+        }
+
         return( curTarget );
     }
 
@@ -186,6 +188,25 @@ public class Web3Helper {
     public void clearAccount(){
         curAccountFileName = "";
         curCredentials = null;
+    }
+
+    //----------------------------------------------------------------------------
+    // ヘルパーの有効性を判定
+    //----------------------------------------------------------------------------
+    public boolean isValid() {
+        if( !isTargetValid() ){
+            return( false );
+        }
+
+        if( curAccountFileName == null || curAccountFileName.equals( "" ) ){
+            return( false );
+        }
+
+        if( curCredentials == null ){
+            return( false );
+        }
+
+        return( true );
     }
 
     //--------------------------------------------------------------------------------------
@@ -232,8 +253,8 @@ public class Web3Helper {
         }
 
         // ここまで来たら成功
-        curCredentials = newCredentials;
         curAccountFileName = fileName;
+        curCredentials = newCredentials;
         return( true );
     }
 
@@ -242,6 +263,7 @@ public class Web3Helper {
     //----------------------------------------
     public String getCurAccountFileName(){
         if( ! isValid() ){
+            log( "@ getCurAccountFileName: invalid call" );
             return( "" );
         }
 
@@ -253,6 +275,7 @@ public class Web3Helper {
     //----------------------------------------
     public Credentials getCurAccount(){
         if( ! isValid() ){
+            log( "@ getCurAccount: invalid call" );
             return( null );
         }
 
@@ -264,6 +287,7 @@ public class Web3Helper {
     //----------------------------------------
     public String getCurAccountJson(){
         if( ! isValid() ){
+            log( "@ getCurAccountJson: invalid call" );
             return( "" );
         }
 
@@ -283,6 +307,7 @@ public class Web3Helper {
     //----------------------------------------
     public String getCurPrivateKey(){
         if( ! isValid() ){
+            log( "@ getCurPrivateKey: invalid call" );
             return( "" );
         }
 
@@ -297,6 +322,7 @@ public class Web3Helper {
     //------------------------------------------
     public String getCurEthereumAddress(){
         if( ! isValid() ){
+            log( "@ getCurEthereumAddress: invalid call" );
             return( "" );
         }
 
@@ -309,6 +335,7 @@ public class Web3Helper {
     //----------------------------------------
     public BigInteger getCurBalance( ){
         if( ! isValid() ){
+            log( "@ getCurBalance: invalid call" );
             return( BigInteger.ZERO );
         }
 
@@ -328,7 +355,7 @@ public class Web3Helper {
 
     //---------------------------------------------------------------------------------------------------------------
     // アカウントファイルの出力（※返値は出力ファイル名）
-    // メモ：[WalletUtils.generateNewWalletFile]の出力するファイル名は
+    // メモ：[WalletUtils.generateNewWalletFile]はアカウントファイルを生成するが、そのファイル名が
     // 　　　[UTC--2020-02-28T18-47-09.7Z--2b1f80c8ad200b5245a665c5a0e3737e4950f360.json]という形式で管理しづらいので、
     //       出力ファイル名を[dumpName]で指定して別ファイルに吐き出す
     // 　　　[dumpName]が空であればアドレス形式[0x2b1f80c8ad200b5245a665c5a0e3737e4950f360.json]で吐き出す
@@ -361,7 +388,7 @@ public class Web3Helper {
     }
 
     //----------------------------------------------------------------------------------------------
-    // ファイルから１行読む
+    // ファイルから１行読む（※例外は呼び出し元にお任せ）
     //----------------------------------------------------------------------------------------------
     private String loadLine( String fileName ) throws Exception{
         FileInputStream is = context.openFileInput( fileName );
@@ -373,7 +400,7 @@ public class Web3Helper {
     }
 
     //----------------------------------------------------------------------------------------------
-    // ファイルに文字列を出力する
+    // ファイルに文字列を出力する（※例外は呼び出し元にお任せ）
     //----------------------------------------------------------------------------------------------
     private void dumpString( String fileName, String str ) throws Exception{
         FileOutputStream os = context.openFileOutput( fileName, Context.MODE_PRIVATE );

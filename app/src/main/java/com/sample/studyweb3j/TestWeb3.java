@@ -34,13 +34,14 @@ public class TestWeb3 {
     // このアドレスを無効（空文字）にした場合、[HelloWorld]コントラクトがデプロイされます
     // デプロイが成功すると[LogCat]にアドレスが表示されるので、その値を下記に設定することで再アクセスが可能です
     //（※コメントアウトされているアドレスは実際にRinkeby上にデプロイされたものなので、テストにお使いいただけます）
-    final private String HELLO_WORLD_ADDRESS = ""; //"0xd21ce6f369f8281b7d39b47372c8f4a8a77841fc";
+    final private String DEFAULT_HELLO_WORLD_ADDRESS = ""; //"0xd21ce6f369f8281b7d39b47372c8f4a8a77841fc";
 
     //-------------------------------------
     // メンバー
     //-------------------------------------
     private Web3Helper helper;
     private boolean isBusy = false;
+    private String curHelloWorldAddress = DEFAULT_HELLO_WORLD_ADDRESS;
 
     //----------------------------------------------------------------------------
     // コンストラクタ
@@ -92,17 +93,16 @@ public class TestWeb3 {
                 checkSend();
 
                 // [HelloWorld]コントラクトの確認
-                String helloWorldAddress = HELLO_WORLD_ADDRESS;
-                if( ! execCheckHelloWorld( helloWorldAddress ) ) {
+                if( ! execCheckHelloWorld( curHelloWorldAddress ) ) {
                     // コントラクトが無効であれば[HelloWorld]をデプロイ
-                    helloWorldAddress = execDeployHelloWorld();
+                    curHelloWorldAddress = execDeployHelloWorld();
                 }
 
-                // この時点で[helloWorldAddress]が有効であればやりとり開始
-                if( ! helloWorldAddress.equals( "" ) ) {
-                    execInteractHelloWorld( helloWorldAddress );
+                // この時点で[HelloWorld]コントラクトのアドレスが有効であればやりとり開始
+                if( curHelloWorldAddress != null && ! curHelloWorldAddress.equals( "" ) ) {
+                    execInteractHelloWorld( curHelloWorldAddress );
                 }else{
-                    // [helloWorldAddress]が無効
+                    // コントラクトのアドレスが無効
                     log( "@ TestWeb3: FAILED TO INTERACT [HellowWorld] CONTRACT" );
                 }
             }else{
