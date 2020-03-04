@@ -53,9 +53,9 @@
 　2020年3月1日の時点で、下記の環境で動作確認を行なっています。  
 
 #### 実装環境
-　・**Windows 10**  
-　・**Android Studio 3.1.2**  
-　・**Java 1.8.0_152**
+　・Windows 10  
+　・Android Studio 3.1.2  
+　・Java 1.8.0_152
 
 #### 確認端末
-　・**Nexus 6** **Android 7.1.1**  
+　・Nexus6 android 7.1.1  
